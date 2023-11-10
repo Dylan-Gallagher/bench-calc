@@ -108,22 +108,42 @@ bool hasHigherOrEqualPrecedence(char a, char b) {
 // evaluate expression stored as an array of string tokens
 double evaluate_infix_expression(char ** args, int nargs) {
     struct char_stack * stack = char_stack_new(nargs);
-    char * outputString = (char *)calloc(100, sizeof(char));
-    outputString[0] = '\0';
+    char * outputString = "";
 
+    printf("got here\n");
 
     // loop through the input expression one character at a time
     for (int i = 0; i < nargs; ++i) {
-        char * token = (char *)malloc(strlen(args[i]) + 1);
-        strcpy(token, args[i]);
+        printf("got here 2\n");
+        if (args[i][0] == ' ') {
+            continue;
+        }
+
+
+        char * token = (char *)malloc(100 * sizeof(char));
+
+//        if (token == NULL) {
+//            printf("string init failed\n");
+//            return 1;
+//        }
+        while (args[i][0] != ' ') {
+            printf("got here ch = %c\n", args[i][0]);
+            char temp[2] = {args[i][0], '\0'};
+            strcat(token, temp);
+            printf("%s\n", token);
+            i++;
+        }
+        printf("got here 4\n");
+
+        // DEBUG
+        printf("DEBUG: ");
+        printf("%s\n", token);
 
         // if token is a number
         if (isNumber(token))
         {
             // append to output string
             strcat(outputString, token);
-            char temp[2] = {' ', '\0'};
-            strcat(outputString, temp);
         }
         else if (token[0] == '(') {
             // push bracket to stack
@@ -147,12 +167,11 @@ double evaluate_infix_expression(char ** args, int nargs) {
         }
         else if (token[0] == ')') {
             while (char_stack_peek(stack) != '(') {
-                char temp[3] = {char_stack_pop(stack), ' ', '\0'};
+                char temp[2] = {char_stack_pop(stack), '\0'};
                 strcat(outputString, temp);
             }
             char_stack_pop(stack);
         }
-        free(token);
     }
 
     while (!char_stack_is_empty(stack)) {
